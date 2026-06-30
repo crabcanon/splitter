@@ -1,0 +1,32 @@
+services:
+  splitter-api:
+    build:
+      context: .
+    image: splitter-api:0.1.0
+    container_name: splitter-api
+    ports:
+      - "8000:8000"
+    environment:
+      SPLITTER_APP_NAME: splitter
+      SPLITTER_APP_VERSION: 0.1.0
+      SPLITTER_LLM_PROVIDER: ${SPLITTER_LLM_PROVIDER:-}
+      SPLITTER_LLM_MODEL: ${SPLITTER_LLM_MODEL:-}
+      SPLITTER_LLM_BASE_URL: ${SPLITTER_LLM_BASE_URL:-}
+      SPLITTER_LLM_API_KEY: ${SPLITTER_LLM_API_KEY:-}
+      SPLITTER_EMBEDDING_PROVIDER: ${SPLITTER_EMBEDDING_PROVIDER:-}
+      SPLITTER_EMBEDDING_MODEL: ${SPLITTER_EMBEDDING_MODEL:-}
+      SPLITTER_EMBEDDING_BASE_URL: ${SPLITTER_EMBEDDING_BASE_URL:-}
+      SPLITTER_EMBEDDING_API_KEY: ${SPLITTER_EMBEDDING_API_KEY:-}
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=2).read()",
+        ]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
