@@ -5,19 +5,16 @@ description = "Universal Document Parsing & Splitting Gateway"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "beautifulsoup4>=4.12,<5.0",
     "chonkie>=1.6.8",
     "fastapi>=0.115,<1.0",
-    "langchain>=1.3.11",
     "langchain-text-splitters>=0.3,<0.5",
-    "llama-index>=0.14.16",
     "llama-index-core>=0.12,<0.15",
     "llama-index-embeddings-openai>=0.3,<0.6",
-    "llama-index-node-parser-chonkie>=0.1,<0.2",
-    "llama-index-readers-file>=0.4,<0.6",
     "pydantic>=2.8,<3.0",
     "python-dotenv>=1.0,<2.0",
     "tree-sitter-language-pack>=1.8,<2.0",
-    "uvicorn[standard]>=0.30,<1.0",
+    "uvicorn>=0.30,<1.0",
 ]
 
 [project.optional-dependencies]

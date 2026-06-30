@@ -102,8 +102,8 @@ def build_strategy_specs() -> list[FrameworkStrategySpec]:
         FrameworkStrategySpec(
             name=SplitterType.CHUNKER,
             family="Text-Splitters",
-            description="LlamaIndex Chonkie Chunker wrapping chonkie RecursiveChunker.",
-            backend="llamaindex+chonkie",
+            description="Chonkie RecursiveChunker adapter.",
+            backend="chonkie",
             builder=_chonkie_chunker,
             default_kwargs={
                 "recursive_kwargs": {
@@ -180,7 +180,6 @@ def _document(document: LoadedDocument) -> Any:
 
 def _simple_file_parser(context: SplitContext) -> Any:
     from llama_index.core.node_parser import SimpleFileNodeParser
-    from llama_index.readers.file import FlatReader  # noqa: F401
 
     return _instantiate(SimpleFileNodeParser, _parser_kwargs(context))
 
@@ -197,11 +196,7 @@ def _node_parser_builder(class_name: str) -> ParserBuilder:
 
 def _langchain_node_parser(context: SplitContext) -> Any:
     from llama_index.core.node_parser import LangchainNodeParser
-
-    try:
-        from langchain import RecursiveCharacterTextSplitter
-    except ImportError:
-        from langchain_text_splitters import RecursiveCharacterTextSplitter
+    from langchain_text_splitters import RecursiveCharacterTextSplitter
 
     kwargs = _parser_kwargs(context)
     splitter_kwargs = kwargs.pop("splitter_kwargs", {})
@@ -300,15 +295,71 @@ def _value(value: Any) -> Any:
 def _chonkie_chunker(context: SplitContext) -> Any:
     from chonkie import RecursiveChunker
 
-    try:
-        from llama_index.node_parser.chonkie import Chunker
-    except ImportError:
-        from llama_index.core.node_parser import Chunker
-
     kwargs = _parser_kwargs(context)
     recursive_kwargs = kwargs.pop("recursive_kwargs", {})
-    chunker = RecursiveChunker(**recursive_kwargs)
-    return Chunker(chunker=chunker, **kwargs)
+    return _ChonkieParserAdapter(RecursiveChunker(**recursive_kwargs))
+
+
+class _ChonkieParserAdapter:
+    """Expose Chonkie chunks through the parser interface used by strategies."""
+
+    def __init__(self, chunker: Any) -> None:
+        self._chunker = chunker
+
+    def get_nodes_from_documents(self, documents: list[Any]) -> list[Any]:
+        nodes: list[Any] = []
+        for document_index, document in enumerate(documents, start=1):
+            text = str(getattr(document, "text", "") or "")
+            for chunk_index, chunk in enumerate(self._chunker.chunk(text), start=1):
+                nodes.append(
+                    _ChonkieNodeAdapter(
+                        chunk=chunk,
+                        document_index=document_index,
+                        chunk_index=chunk_index,
+                    )
+                )
+        return nodes
+
+
+class _ChonkieNodeAdapter:
+    def __init__(self, chunk: Any, document_index: int, chunk_index: int) -> None:
+        self._chunk = chunk
+        self._document_index = document_index
+        self._chunk_index = chunk_index
+
+    @property
+    def node_id(self) -> str:
+        start = self.start_char_idx
+        end = self.end_char_idx
+        return f"chonkie_{self._document_index}_{self._chunk_index}_{start}_{end}"
+
+    @property
+    def metadata(self) -> dict[str, Any]:
+        token_count = getattr(self._chunk, "token_count", None)
+        if token_count is None:
+            return {}
+        return {"token_count": int(token_count)}
+
+    @property
+    def relationships(self) -> dict[str, Any]:
+        return {}
+
+    @property
+    def start_char_idx(self) -> int | None:
+        return _optional_int(getattr(self._chunk, "start_index", None))
+
+    @property
+    def end_char_idx(self) -> int | None:
+        return _optional_int(getattr(self._chunk, "end_index", None))
+
+    def get_content(self) -> str:
+        return str(getattr(self._chunk, "text", "") or "")
+
+
+def _optional_int(value: Any) -> int | None:
+    if value is None:
+        return None
+    return int(value)
 
 
 def _semantic_splitter(context: SplitContext) -> Any:
