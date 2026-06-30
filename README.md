@@ -1,6 +1,6 @@
 # Splitter
 
-基于 FastAPI、uv、LlamaIndex、LangChain 与 Chonkie 的文档内容解析与切分服务。
+基于 FastAPI、uv、LlamaIndex Core、LangChain Text Splitters 与 Chonkie 的文档内容解析与切分服务。
 
 当前 `/api/v1/split` 接口已简化为只接收两个字段：
 
@@ -54,7 +54,7 @@ curl -X POST http://127.0.0.1:8000/api/v1/split \
 | File-Based | `MarkdownNodeParser` | LlamaIndex |
 | Text-Splitters | `CodeSplitter` | LlamaIndex |
 | Text-Splitters | `LangchainNodeParser` | LlamaIndex + LangChain |
-| Text-Splitters | `Chunker` | LlamaIndex + Chonkie |
+| Text-Splitters | `Chunker` | Chonkie |
 | Text-Splitters | `SentenceSplitter` | LlamaIndex |
 | Text-Splitters | `SentenceWindowNodeParser` | LlamaIndex |
 | Text-Splitters | `SemanticSplitterNodeParser` | LlamaIndex + OpenAIEmbedding |

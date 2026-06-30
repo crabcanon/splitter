@@ -149,6 +149,6 @@ LLM 与 Embedding 不再通过 `/split` 请求体传入，而是统一从 `.env`
 
 ## 7. LlamaIndex/LangChain 适配
 
-所有策略均直接使用 LlamaIndex、LangChain 或 Chonkie 已实现的 parser/splitter。本项目只负责请求模型、provider 配置、parser 构造和 `StandardNode` 响应标准化。
+所有策略均直接使用 LlamaIndex Core、LangChain Text Splitters 或 Chonkie 已实现的 parser/splitter。本项目只负责请求模型、provider 配置、parser 构造和 `StandardNode` 响应标准化。
 
 自然语言类策略使用更适合 API 验证的默认窗口：`SentenceSplitter`、`TokenTextSplitter` 默认 `chunk_size=128`，`LangchainNodeParser` 与 `Chunker` 默认使用约 240 字符的窗口。`SentenceWindowNodeParser` 会使用兼容中英文句末标点的 sentence splitter。

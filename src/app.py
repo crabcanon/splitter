@@ -16,8 +16,8 @@ __version__ = "0.1.0"
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or Settings.from_env()
     app = FastAPI(
-        title="Universal Document Parsing & Splitting Gateway",
-        description="FastAPI service for routing document content to splitter strategies.",
+        title="多格式多策略文档切片API服务",
+        description="基于12类切片策略的多文档格式（Markdown、JSON、HTML、Text等）分片服务",
         version=__version__,
         openapi_version="3.1.0",
     )

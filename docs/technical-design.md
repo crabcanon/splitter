@@ -9,7 +9,7 @@
 - 统一入口：提供 `/api/v1/split` 对纯文本内容做解析切分。
 - 简化契约：请求体只保留 `content` 和 `mode`，降低调用与维护成本。
 - 策略解耦：通过策略模式和注册表管理 File-Based、Text-Splitters、Relation-Based 三类策略。
-- 框架适配：直接使用 LlamaIndex、LangChain、Chonkie 已实现的 parser/splitter，项目只维护实例化与输出标准化逻辑。
+- 框架适配：直接使用 LlamaIndex Core、LangChain Text Splitters、Chonkie 已实现的 parser/splitter，项目只维护实例化与输出标准化逻辑。
 - 供应商解耦：LLM 与 Embedding 配置通过 `.env`/环境变量注入，不与 API 请求体或策略实现硬绑定。
 - 工程可维护：分层架构、Pydantic DTO、可测试的业务服务、清晰的部署资产。
 
@@ -123,14 +123,14 @@ class SplitRequest(BaseModel):
 | File-Based | `MarkdownNodeParser` | LlamaIndex | Markdown 节点解析 |
 | Text-Splitters | `CodeSplitter` | LlamaIndex | 代码切分 |
 | Text-Splitters | `LangchainNodeParser` | LlamaIndex + LangChain | 包装 `RecursiveCharacterTextSplitter` |
-| Text-Splitters | `Chunker` | LlamaIndex + Chonkie | 包装 `RecursiveChunker` |
+| Text-Splitters | `Chunker` | Chonkie | 轻量适配 `RecursiveChunker` |
 | Text-Splitters | `SentenceSplitter` | LlamaIndex | 句子切分 |
 | Text-Splitters | `SentenceWindowNodeParser` | LlamaIndex | 句子窗口节点 |
 | Text-Splitters | `SemanticSplitterNodeParser` | LlamaIndex + OpenAIEmbedding/MockEmbedding | 配置 embedding 时使用真实语义切分，未配置时使用本地 MockEmbedding |
 | Text-Splitters | `TokenTextSplitter` | LlamaIndex | Token 切分 |
 | Relation-Based | `HierarchicalNodeParser` | LlamaIndex | 层级节点解析 |
 
-所有策略均直接调用 LlamaIndex、LangChain 或 Chonkie 已实现的 parser/splitter，再通过 adapter 转回 `StandardNode`。项目不维护自研切分 fallback；依赖缺失或 parser 参数错误会返回明确的 `STRATEGY_EXECUTION_ERROR`。
+所有策略均直接调用 LlamaIndex Core、LangChain Text Splitters 或 Chonkie 已实现的 parser/splitter，再通过 adapter 转回 `StandardNode`。项目不维护自研切分 fallback；依赖缺失或 parser 参数错误会返回明确的 `STRATEGY_EXECUTION_ERROR`。
 
 ## 8. 自动路由规则
 

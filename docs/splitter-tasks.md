@@ -22,3 +22,4 @@
 | SPLIT-018 | 2026-06-30 15:30 +08:00 | P0 | API | Remove `diagnostics` from split responses and add 12 strategy request examples to runtime Swagger | SPLIT-017 | Done |
 | SPLIT-019 | 2026-06-30 15:50 +08:00 | P0 | Dependencies | Add the tree-sitter language pack required by LlamaIndex `CodeSplitter` and cover the Swagger sample with a regression test | SPLIT-018 | Done |
 | SPLIT-020 | 2026-06-30 16:55 +08:00 | P0 | Strategies | Tune natural-language splitter defaults, add Chinese sentence splitting, enable default Chunker dependency, and verify all Swagger strategy samples | SPLIT-019 | Done |
+| SPLIT-021 | 2026-06-30 18:05 +08:00 | P0 | Deployment | Remove CUDA-heavy transitive dependencies, slim Docker runtime image, and verify strategy/API behavior | SPLIT-020 | Done |
